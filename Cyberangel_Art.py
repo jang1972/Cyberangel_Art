@@ -1,0 +1,203 @@
+import time
+import os
+from threading import Thread
+import pygame
+import traceback
+import antigravity
+
+ASCII_ART = r"""
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⡟⠁⠀⠀⠀⠀⢀⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠒⠀⠀⠀⠀⠀⠀⢀⣿⠀⠀⠀⠀⣠⣿⣿⠋⠀⢀⣠⣴⡞⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠀⠀⠀⣼⣿⡿⢁⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⡇⠀⣼⠟⣫⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⡇⢘⣭⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡇⠀⢀⣿⣿⣿⠟⣵⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠀⠀⢠⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⣷⣶
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢆⣿⣿⠀⣼⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⡇⢿⣫⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⡟
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⢷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⡟⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣣⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⣠⣼⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⡿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡼⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢠⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣎⢿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⢻⣿⣿⣿⡟⠁⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣹⣿⠏⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣰⢏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠁⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⡿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣼⣦⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣾⡇⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣿⣿⣷⣝⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢸⣿⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠸⣿⣿⣿⣿⣿⡷⣎⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣿⣿⣿⣿⣜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⣿⡏⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠄⣿⣿⣿⣿⣿⣷⣿⣧⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⡜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⢀⠀⠀⠀⠀
+⠀⠀⠀⠀⢸⣿⠁⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⡟⣿⣿⣿⣿⣿⣿⣿⣷⡹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣿⣿⣿⣿⣿⣿⣿⡝⣿⣿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡜⣷⣤⢀⠀
+⠀⠀⠀⠀⣿⡿⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣿⣹⣿⣿⣿⣿⣿⣿⣿⣿⣜⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⡟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠹⣯⣿⣶
+⠀⠀⠀⢰⣿⡇⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⢻⣿⣷⡜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠈⠛⢿
+⠀⠀⠀⢸⣿⡇⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣻⣿⣯⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡾⣿⣿⣿⣜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⢀⡀⠀
+⠀⠀⠀⣾⣿⠁⠂⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣍⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠹⣿
+⠀⠀⠀⣿⣿⠀⡅⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⠿⠿⠿⠛⠛⠛⠁⠞⠪⠿⠿⠿⢻⡹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠹
+⡀⠀⠀⣿⣿⠀⡇⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣵⣿⣿⣿⣿⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠻⣷⡸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⠁⠀⠀⣿⣿⠀⢡⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⢾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣾⣿⣿⣿⣿⠗⢀⣤⣀⠀⢀⣀⠠⣀⠖⣂⠘⣿⣿⣷⠀⢰⣶⣶⣇⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⣿⣿⠀⢀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⡿⣫⣾⣿⣿⣿⣿⣿⣿⣾⡿⣿⣏⡄⣿⣿⡇⢸⣶⣵⡆⣿⣿⣿⠀⣼⣿⣿⣹⣎⢿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⣿⣿⡄⠈⠇⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣼⣿⣿⣿⣿⡍⠛⠛⠉⠁⠀⠈⠑⠀⠀⠀⠀⣀⣒⣛⢿⣿⣿⣿⣿⡿⣽⣿⣿⢿⣭⣿⡿⢿⣿⣽⣻⣿⣿⣿⣿⣿⡹⣿⣿⣿⣿⣣⣾⣿⣿⣧⣿⣿⡟⢰⣿⣿⣿⣼⣿⡼⡗⣿⣿⣿⣿⣿⣿⣿⣿⣿⠂⠀
+⣄⠀⠀⣿⣿⡇⠀⠤⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣿⣿⡿⠟⠉⠀⠀⠀⠀⠠⠄⠆⢌⢰⢴⠆⣆⢻⣿⣿⣿⣿⣿⣿⣟⡽⣟⣿⣿⣿⣿⣿⣿⣿⣷⣾⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⣼⣿⣿⣿⣿⣿⣿⣧⢃⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⣿⡆⠀⣿⣿⣇⠀⠀⠇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡫⠟⠉⠀⠀⢀⣠⣴⣶⣦⠴⢰⣿⣶⠰⣿⣷⣿⡞⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⣿⣿⣠⢿⣿⣿⠀⠀⠄⡜⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢴⠆⠀⠀⢰⣿⣿⣿⢿⣿⣿⣮⡻⠿⣳⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⣿⢧⣿⢾⣿⣿⡄⠀⠀⡾⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣉⣴⣦⣀⠀⠻⣿⣿⣮⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀
+⡿⣼⣿⣯⣿⣿⡇⠀⠀⢻⣚⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣿⣿⣿⣷⣦⡌⣻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣾⣿⣿⡇⠀⠀
+⢳⣿⣿⣿⣹⣿⣷⠀⠀⠀⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⠁⠀⠀
+⣾⣿⣿⣿⣧⢿⣿⡇⠀⠀⢈⢿⣻⣻⣿⣿⣿⣿⣿⣿⣿⣿⡟⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⣹⣿⣿⣿⣿⣿⣽⣿⣿⣿⠇⠀⠀⠀
+⣿⣿⣿⣿⣿⡘⣿⣷⠀⠀⠀⠨⣛⢾⣿⣿⣿⣿⣿⣿⣿⣿⣷⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⢰⣿⣿⣿⣿⡿⣱⣿⣿⣿⡟⠀⠀⠀⠀
+⣿⣿⣿⣯⣿⣧⣹⣿⡧⠀⠀⠀⠰⢿⣯⣻⣿⣿⣿⣿⣿⣿⣿⣷⡹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⢠⣿⣿⣿⣿⣟⣾⣿⣿⣿⣿⠁⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣷⢿⣿⡄⠀⠐⠀⠘⢿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣷⡙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣄⢀⣾⣿⣿⡿⢻⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀
+⣶⣮⣶⣶⣾⣷⣾⣎⢿⣷⡀⠁⠀⠀⠈⠻⢾⡱⣿⣿⣿⣿⣿⣿⣿⣿⣎⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠻⢿⣿⣿⣿⣍⡀⢰⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀
+⣷⣿⣿⣿⣿⣿⣷⣿⡆⢻⣷⡄⠀⠀⠀⠀⠈⠻⣏⠿⣿⣿⣿⣿⣿⣿⣿⣷⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠶⠟⠋⠉⠻⠿⡿⣿⣿⣿⣿⢃⡀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⢧⢻⣿⡆⠀⠀⠀⠀⠀⠀⠱⢊⡙⣿⣿⣿⣿⣿⣿⣿⣮⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠐⠀⠀⠀⠀⠂⢠⣿⣿⡿⢡⣿⣿⣷⣶⣦⣤⣀⠀
+⣿⣿⣿⣿⣿⣿⡿⣟⣿⣿⣷⣛⣿⣮⠀⠀⠀⠀⠀⠀⠠⠀⠠⠈⠋⠻⣿⣿⣿⣿⣿⣮⡕⡣⢥⢋⡹⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠠⠀⠀⠄⠀⠀⠄⠀⣾⣿⠟⠀⠀⠉⠉⠛⠻⢿⣿⣿⣿
+⣿⣿⣿⣿⣿⣻⣾⣿⡿⣻⢠⣿⣎⢿⣷⣄⢤⠰⠀⠈⠂⠀⠀⢦⣁⠈⠐⠨⢛⠿⣿⣿⣿⣦⣀⠘⠘⠯⣟⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢏⠱⡀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠂⣼⡿⢃⠀⠄⠀⠀⠀⠀⠀⠀⠀⠉⠛
+⣿⡿⣟⣭⣿⣿⣿⣯⣿⠇⣾⣿⣿⣧⠙⣿⣦⡁⠀⡀⠔⢀⢀⠐⡜⡢⠓⣀⠤⣀⢀⠉⣙⡛⠛⠷⠖⠒⠦⠤⣉⡙⠿⡟⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⢙⢂⠀⡡⢤⠄⠀⠀⠀⠀⠀⠀⢁⡿⠋⠀⠀⠀⣈⠀⠂⠀⠀⠀⠀⠀⠀⠀
+⣻⣿⣿⣿⢿⣿⣿⣿⡟⣸⣿⣿⣿⣡⠗⢌⠻⣿⣆⡐⠀⢂⠁⣂⠀⠐⡘⢂⠚⠅⣺⢰⣿⣿⠢⡝⣆⣷⠇⣛⣻⡽⢢⢀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⢸⣫⣇⣝⣻⣎⣛⣠⣄⣀⠄⠀⠝⠁⠀⠀⠀⠀⠀⠀⢈⡀⢀⠀⠀⠀⠀⠀
+⣿⡿⣿⣵⣿⣿⣿⡿⣰⣿⣿⣿⣿⣟⡨⡳⠓⣈⠿⢷⣦⣀⠀⠠⠂⠀⠸⢄⠃⣰⡇⢸⣿⡷⣾⣹⢩⢹⡠⡯⢼⣚⡟⣪⡇⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡇⠀⢰⡀⢻⣶⣿⣼⣿⣿⣾⣯⣿⣦⡶⢀⠀⢰⡆⠀⢀⠒⢤⡉⠠⠆⢀⡄⠀⠀⠀
+⣿⣾⣿⣿⣿⣿⡟⣰⣿⣿⣿⣿⡿⣱⠸⠀⠁⠀⣜⠢⢙⠿⣷⣤⣀⠀⠂⠈⢀⣿⠃⣾⣿⡿⡇⡇⢻⠎⠃⣿⣾⡟⢩⡅⠇⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⢸⣇⠘⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⣯⣿⡿⣴⡿⢧⣦⣼⣶⣟⢰⣷⣤⠀⠀
+"""
+
+NANO = r"""
+    Project Bunny 19C              Herrscher of Reason
+  
+        This is where the miracle happens.
+        Editing in progress... █
+
+    ^G Get Help  ^O Write Out ^W Where Is  ^K Cut Text
+    ^X Exit      ^R Read File ^\ Replace   ^U Uncut Text
+"""
+
+SUDO = r"""[root@Bronya-Zaychik /]# nano Herrscher of Reason"""
+
+def play_audio(file_path):
+    """Pygame을 사용하여 로컬 오디오 파일을 재생하는 함수"""
+
+    if not os.path.exists(file_path):
+        print(f"오디오 파일을 찾을 수 없습니다: {file_path}")
+        print("파일 경로가 올바른지 다시 확인해주세요.")
+        return
+
+    try:
+        pygame.mixer.music.load(file_path) # 오디오 파일 로드
+        pygame.mixer.music.play() # 오디오 재생
+    except Exception as e:
+        print(f"오디오 재생 실패: {e}")
+        print("pygame 설치 확인 또는 오디오 파일 문제일 수 있습니다.")
+        print(f"오류 상세: {e}")
+
+current_code_time = 0.0
+        
+def srt_time_to_seconds(srt_time_str):
+    """SRT 시간 문자열(HH:MM:SS,ms)을 초 단위 float으로 변환합니다."""
+    parts = srt_time_str.replace(',', '.').split(':')
+    h = int(parts[0])
+    m = int(parts[1])
+    
+    
+    s = float(parts[2])
+    return h * 3600 + m * 60 + s
+
+def custom_sleep_and_print(target_time, text_to_print, sound=None):
+    """
+    현재 시간부터 목표 시간까지 sleep하고 텍스트를 출력한 후,
+    현재 시간을 목표 시간으로 업데이트합니다.
+    """
+    global current_code_time
+    sleep_duration = target_time - current_code_time
+    if sleep_duration > 0:
+        time.sleep(sleep_duration)
+    
+    if text_to_print: # 출력할 텍스트가 있을 경우에만 출력
+        print(text_to_print)
+    current_code_time = target_time # 현재 시간을 목표 시간으로 업데이트
+
+    if sound:
+        # 만약 넘겨받은 sound가 함수(lambda 등)라면 실행하고, 
+        # 일반적인 sound 객체라면 .play()를 시도합니다.
+        if callable(sound):
+            sound()
+        else:
+            try:
+                sound.play()
+            except AttributeError:
+                pass # play 메서드가 없으면 그냥 무시
+
+error_trigger = lambda: exec("try: 1/0\nexcept: traceback.print_exc()")
+nano_trigger = lambda: print(NANO)
+sudo_trigger = lambda: print(SUDO)
+
+def main():
+    # 효과음 파일 로드
+    burst_sound = pygame.mixer.Sound("BurstMissile1.wav")
+    burst_sound.set_volume(0.8)
+    # afterburn_sound = pygame.mixer.Sound("Afterburn.mp3")
+    global current_code_time # 전역 current_code_time 사용
+    print(ASCII_ART)
+
+    custom_sleep_and_print(srt_time_to_seconds("00:00:32,999"), "「Cyber Angel: ZERO Spaghetti」",  error_trigger)
+
+    ## 뭔가 오류가 나는듯한 느낌
+    custom_sleep_and_print(srt_time_to_seconds("00:00:33,000"), "\nCORRUPT BINARY CODES INFECTING MY MIND")
+
+    ## sudo 비밀번호나 root 계정 터미널 연출
+    custom_sleep_and_print(srt_time_to_seconds("00:00:36,700"), "PERFORM INVOCATION WITH NUMBING FREEZE\n", sudo_trigger)
+
+    ## 텍스트 에디터나 IDE 켜는듯한
+    custom_sleep_and_print(srt_time_to_seconds("00:00:40,500"), "\nQUERYING FOR A VARIABLE AND SEIZING THE TIME", nano_trigger)
+
+    ## 컴파일 연출
+    custom_sleep_and_print(srt_time_to_seconds("00:00:44,400"), "TO RECOMPILE AND TRIGGER MY DESTINY")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:00:49,700"), "THOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:00:53,900"), "I'LL TRY HARD TO SOAR TO THE HEAVEN I DREAMED")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:00:57,800"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:01,700"), "FOR I KNOW I WILL ALWAYS GO WITH YOU\n")
+
+    ## 에컴7 SDBM등 산탄미사일 효과음 재생
+    custom_sleep_and_print(srt_time_to_seconds("00:01:21,000"), "BURST HYPERSTHENE PIERCE THE WIND", sound=burst_sound)
+
+    ## Numpy 부하 유발과 애프터버너 효과음
+    custom_sleep_and_print(srt_time_to_seconds("00:01:24,900"), "I TORCHED MY JETS INTO FULL THRUST") #, sound=afterburn_sound)
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:28,700"), "QUERYING FOR A VARIABLE AND SEIZING THE TIME")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:32,600"), "IN A NEW DAY COMING NOT SO FAR AWAY")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:38,000"), "THOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:42,200"), "I'LL TRY HARD TO SOAR TO THE HEAVEN I DREAMED")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:46,000"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
+
+    custom_sleep_and_print(srt_time_to_seconds("00:01:50,000"), "FOR I KNOW I WILL ALWAYS GO WITH YOU\n")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:22,100"), "THOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:26,300"), "I'LL TRY HARD TO SOAR TO THE HEAVEN I DREAMED")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:29,900"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:34,100"), "FOR I KNOW I WILL ALWAYS GO WITH YOU")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:38,100"), "THOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:41,400"), "I'LL TRY HARD TO SOAR TO THE HEAVEN I DREAMED")
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:45,200"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
+
+    custom_sleep_and_print(srt_time_to_seconds("00:02:48,800"), "FOR I KNOW I WILL ALWAYS GO WITH MY HEART")
+    time.sleep (10) 
+
+if __name__ == '__main__':
+    # 오디오 재생을 별도의 스레드에서 시작
+    # mp3 파일은 별도로 구하시길 바랍니다.
+    # ----------------------------------------------------------------------
+    pygame.mixer.init()
+    audio_file_path = r"CyberAngel.mp3"
+    audio_thread = Thread(target=play_audio, args=(audio_file_path,))
+    audio_thread.daemon = True # 메인 스레드 종료 시 오디오 스레드도 함께 종료
+    audio_thread.start()
+
+    main()
