@@ -33,6 +33,19 @@ BurstMissile.wav는 **반다이 남코 엔터테인먼트의 에이스 컴뱃 7 
 
 BurstMissile.wav was extracted by the repository owner via a direct recording from **Bandai Namco Entertainment's Ace Combat 7: Skies Unknown.**
 
+바닐라 상태에서의 FAEB/MPBM 효과음이 아닌, 비-바닐라 상태에서 ADA-01A Mod를 장착한채 SDBM 사운드, 즉 FAEB가 16번 연속으로 초근거리에서 터지는 효과음을 OBS로 녹화 한 뒤, Kdenlive로 편집 하였습니다.
+
+Instead of the FAEB/MPBM sound effects from the vanilla state, I recorded the SDBM sound—specifically the sound of 16 consecutive FAEB explosions at extremely close range—using OBS in a non-vanilla state with the ADA-01A Mod equipped, and then edited it using Kdenlive.
+
+
+하지만, 역시나 근본적인 저작권은 반다이남코 엔터테인먼트에게 있는만큼 저작권자의 요청이 있을 시 추가 변경 또는 삭제가 될 수 있습니다.
+
+However, as the fundamental copyright belongs to Bandai Namco Entertainment, the content is subject to addition, modification, or deletion upon the copyright holder's request.
+
+<img width="1600" height="370" alt="스크린샷_20260504_181434" src="https://github.com/user-attachments/assets/6c48b786-c175-47e6-8092-8e81d925ca0f" />
+
+<img width="1600" height="370" alt="스크린샷_20260504_181605" src="https://github.com/user-attachments/assets/5e63c101-a8b9-4cf5-96a9-eb82b90f6e24" />
+
 ---
 
 ## 생성형 AI 사용 (Use generative AI)
@@ -40,3 +53,4 @@ BurstMissile.wav was extracted by the repository owner via a direct recording fr
 이 코드는 Gemini 3.1 Flash/Flash-Lite로 생성되었고 VS Code에서 가공 되었습니다.
 
 This code was generated with Gemini 3.1 Flash / Flash-Lite and processed in VS Code.
+
