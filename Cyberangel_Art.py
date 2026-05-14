@@ -4,6 +4,7 @@ from threading import Thread
 import pygame
 import traceback
 import antigravity
+import __hello__
 
 ASCII_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⡟⠁⠀⠀⠀⠀⢀⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -132,7 +133,8 @@ def main():
     # afterburn_sound = pygame.mixer.Sound("Afterburn.mp3")
     global current_code_time # 전역 current_code_time 사용
     print(ASCII_ART)
-
+    
+    __hello__.main()
     custom_sleep_and_print(srt_time_to_seconds("00:00:32,999"), "「Cyber Angel: ZERO Spaghetti」",  error_trigger)
 
     ## 뭔가 오류가 나는듯한 느낌
