@@ -17,9 +17,9 @@ Google is trying to violate users' rights by blocking third-party apps from Andr
 ---
 ## 🎨 아스키 아트 저작권 (ASCII Art Copyright)
 
-코드에 포함된 ASCII 아트와 가사는 *붕괴 3rd*의 '브로냐 자이칙' 및 그 스타 시스템 캐릭터를 기반으로 제작되었습니다.
+코드에 포함된 ASCII 아트와 가사, 로고는 *붕괴 3rd*의 '브로냐 자이칙' 및 그 스타 시스템 캐릭터를 기반으로 제작되었습니다.
 
-The ASCII art and lyrics included in the code were created based on 'Bronya Zaychik' and her Star System character from *Honkai Impact 3rd*.
+The ASCII art and lyrics, Logo included in the code were created based on 'Bronya Zaychik' and her Star System character from *Honkai Impact 3rd*.
 
 해당 캐릭터 및 디자인의 근본적인 저작권은 **miHoYo Network Technology Co. Ltd. / 米哈游网络科技股份有限公司**에 있습니다. 이 프로젝트는 팬 창작의 일환이며, 저작권자의 요청이 있을 시 해당 아트는 변경 또는 삭제될 수 있습니다.
 
