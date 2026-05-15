@@ -187,7 +187,7 @@ def main():
     print(ASCII_ART)
 
     __hello__.main()
-    custom_sleep_and_print(srt_time_to_seconds("00:00:32,999"), "「Cyber Angel: ZERO Spaghetti」",  error_trigger)
+    custom_sleep_and_print(srt_time_to_seconds("00:00:32,999"), "「Cyber Angel: ZERO Spaghetti」", error_trigger)
 
     ## 뭔가 오류가 나는듯한 느낌
     custom_sleep_and_print(srt_time_to_seconds("00:00:33,000"), "\nCORRUPT BINARY CODES INFECTING MY MIND")
