@@ -260,7 +260,7 @@ def main():
 
     custom_sleep_and_print(srt_time_to_seconds("00:01:46,000"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
 
-    custom_sleep_and_print(srt_time_to_seconds("00:01:50,000"), "FOR I KNOW I WILL ALWAYS GO WITH YOU\n, silverwolf_trigger")
+    custom_sleep_and_print(srt_time_to_seconds("00:01:50,000"), "FOR I KNOW I WILL ALWAYS GO WITH YOU\n", silverwolf_trigger)
 
     custom_sleep_and_print(srt_time_to_seconds("00:02:22,100"), "\nTHOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
 
@@ -276,7 +276,7 @@ def main():
 
     custom_sleep_and_print(srt_time_to_seconds("00:02:45,200"), 'THERE IS NO "SPAGHETTI" IN THIS LIBRARY')
 
-    custom_sleep_and_print(srt_time_to_seconds("00:02:48,800"), "FOR I KNOW I WILL ALWAYS GO WITH MY HEART\n, honkai3rd_trigger")
+    custom_sleep_and_print(srt_time_to_seconds("00:02:48,800"), "FOR I KNOW I WILL ALWAYS GO WITH MY HEART\n", honkai3rd_trigger)
     time.sleep (10) 
 
 if __name__ == '__main__':
