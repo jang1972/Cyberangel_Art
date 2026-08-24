@@ -58,6 +58,10 @@ NANO = r"""
 """
 
 SUDO = r"""[root@Bronya-Zaychik /]# nano Herrscher of Reason"""
+LLVM = r"""[100%] Built target my_project
+[ 42%] Building CXX object Herrscher of Truth/main.dir/src/core.cpp.o
+Linking CXX executable bin/app
+"""
 
 HONKAI3RD =  r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -183,7 +187,7 @@ silverwolf_trigger = lambda:  print(SILVERWOLF)
 
 def main():
     # 효과음 파일 로드
-    burst_sound = pygame.mixer.Sound("/home/jang/사진/사이버앤젤/BurstMissile.wav")
+    burst_sound = pygame.mixer.Sound("BurstMissile.wav")
     burst_sound.set_volume(0.8)
     # afterburn_sound = pygame.mixer.Sound("Afterburn.mp3")
     global current_code_time # 전역 current_code_time 사용
@@ -202,7 +206,7 @@ def main():
     custom_sleep_and_print(srt_time_to_seconds("00:00:40,500"), "\nQUERYING FOR A VARIABLE AND SEIZING THE TIME", nano_trigger)
 
     ## 컴파일 연출
-    custom_sleep_and_print(srt_time_to_seconds("00:00:44,400"), "TO RECOMPILE AND TRIGGER MY DESTINY")
+    custom_sleep_and_print(srt_time_to_seconds("00:00:44,400"), "TO RECOMPILE AND TRIGGER MY DESTINY\n", llvm_trigger)
 
     custom_sleep_and_print(srt_time_to_seconds("00:00:49,700"), "THOUGH MY WINGS'VE BEEN BLOODSTAINED AND COULD NEVER RID")
 
